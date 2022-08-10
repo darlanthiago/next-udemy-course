@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import Post from "../../components/Post";
 import Comment from "../../components/Comment";
+import { isEmpty } from "../../utils/array";
 
 export default function RepoView({ post, comments }) {
   const router = useRouter();
@@ -12,28 +13,32 @@ export default function RepoView({ post, comments }) {
       <Post post={post} />
       <hr />
       <h1>Comments</h1>
-      {comments.map((comment, index) => (
-        <Comment comment={comment} key={index} />
-      ))}
+      {!isEmpty(comments) ? (
+        comments.map((comment, index) => (
+          <Comment comment={comment} key={index} />
+        ))
+      ) : (
+        <span>No comments</span>
+      )}
     </>
   );
 }
 
 export const getStaticPaths = async () => {
-  // const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  // const data = await response.json();
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const data = await response.json();
 
-  // const paths = data.map((post) => {
-  //   return {
-  //     params: {
-  //       id: String(post.id),
-  //     },
-  //   };
-  // });
+  const paths = data.map((post) => {
+    return {
+      params: {
+        id: String(post.id),
+      },
+    };
+  });
 
   return {
-    paths: [],
-    fallback: true,
+    paths,
+    fallback: false,
   };
 };
 
@@ -44,17 +49,17 @@ export const getStaticProps = async ({ params }) => {
 
   const postJson = await post.json();
 
+  if (!postJson) {
+    return {
+      notFound: true,
+    };
+  }
+
   const comments = await fetch(
     `https://jsonplaceholder.typicode.com/posts/${params.id}/comments`
   );
 
   const commentsJson = await comments.json();
-
-  if (!post) {
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
