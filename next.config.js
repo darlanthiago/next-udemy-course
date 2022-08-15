@@ -5,7 +5,6 @@ const nextConfig = {
   compiler: {
     styledComponents: true, // ISSO AQUI
   },
+};
 
-}
-
-module.exports = nextConfig
+module.exports = nextConfig;

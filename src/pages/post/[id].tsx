@@ -1,10 +1,29 @@
 import React from "react";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import Post from "../../components/Post";
 import Comment from "../../components/Comment";
 import { isEmpty } from "../../utils/array";
 
-export default function RepoView({ post, comments }) {
+type Post = {
+  id: number;
+  title: string;
+  body: string;
+};
+
+type Comment = {
+  id: number;
+  name: string;
+  email: string;
+  body: string;
+};
+
+type RepoViewProps = {
+  post: Post;
+  comments: Comment[];
+};
+
+export default function RepoView({ post, comments }: RepoViewProps) {
   const router = useRouter();
 
   if (router.isFallback) {
@@ -29,7 +48,7 @@ export default function RepoView({ post, comments }) {
   );
 }
 
-export const getStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   // const response = await fetch("https://jsonplaceholder.typicode.com/posts");
   // const data = await response.json();
 
@@ -47,12 +66,12 @@ export const getStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   const post = await fetch(
     `https://jsonplaceholder.typicode.com/posts/${params.id}`
   );
 
-  const postJson = await post.json();
+  const postJson: Post[] = await post.json();
 
   if (!postJson || isEmpty(postJson)) {
     return {
@@ -64,7 +83,7 @@ export const getStaticProps = async ({ params }) => {
     `https://jsonplaceholder.typicode.com/posts/${params.id}/comments`
   );
 
-  const commentsJson = await comments.json();
+  const commentsJson: Comment[] = await comments.json();
 
   return {
     props: {

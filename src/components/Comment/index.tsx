@@ -1,7 +1,16 @@
 import React from "react";
 import { Name, Email, Body } from "./style";
 
-export default function Comment({ comment }) {
+interface CommentProps {
+  comment: {
+    id: number;
+    name: string;
+    email: string;
+    body: string;
+  };
+}
+
+export default function Comment({ comment }: CommentProps) {
   return (
     <div>
       <Name>{comment.name}</Name>

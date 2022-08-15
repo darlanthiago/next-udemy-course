@@ -1,3 +1,4 @@
+import { GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import styled from "styled-components";
@@ -27,7 +28,18 @@ const PostContainer = styled.a`
   }
 `;
 
-export default function Home({ posts }) {
+type Post = {
+  id: number;
+  title: string;
+  body: string;
+  uniqueId?: string;
+};
+
+type HomeProps = {
+  posts: Post[];
+};
+
+export default function Home({ posts }: HomeProps) {
   return (
     <>
       <Head>
@@ -46,9 +58,9 @@ export default function Home({ posts }) {
   );
 }
 
-export async function getStaticProps(ctx) {
+export const getStaticProps: GetStaticProps = async (ctx) => {
   const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const data = await response.json();
+  const data: Post[] = await response.json();
 
   if (!data) {
     return {
@@ -56,7 +68,7 @@ export async function getStaticProps(ctx) {
     };
   }
 
-  const mapped = data.map((post) => {
+  const mapped = data.map((post: Post) => {
     return {
       ...post,
       uniqueId: uuidv4(),
@@ -68,4 +80,4 @@ export async function getStaticProps(ctx) {
       posts: mapped,
     },
   };
-}
+};
