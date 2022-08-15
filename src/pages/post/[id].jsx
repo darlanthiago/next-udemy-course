@@ -6,6 +6,11 @@ import { isEmpty } from "../../utils/array";
 
 export default function RepoView({ post, comments }) {
   const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <button onClick={() => router.back()}>Back</button>
@@ -25,20 +30,20 @@ export default function RepoView({ post, comments }) {
 }
 
 export const getStaticPaths = async () => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const data = await response.json();
+  // const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  // const data = await response.json();
 
-  const paths = data.map((post) => {
-    return {
-      params: {
-        id: String(post.id),
-      },
-    };
-  });
+  // const paths = data.map((post) => {
+  //   return {
+  //     params: {
+  //       id: String(post.id),
+  //     },
+  //   };
+  // });
 
   return {
-    paths,
-    fallback: false,
+    paths: [],
+    fallback: true,
   };
 };
 
@@ -49,7 +54,7 @@ export const getStaticProps = async ({ params }) => {
 
   const postJson = await post.json();
 
-  if (!postJson) {
+  if (!postJson || isEmpty(postJson)) {
     return {
       notFound: true,
     };
@@ -66,5 +71,6 @@ export const getStaticProps = async ({ params }) => {
       post: postJson,
       comments: commentsJson,
     },
+    revalidate: 30,
   };
 };
